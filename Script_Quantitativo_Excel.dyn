@@ -1,0 +1,1269 @@
+{
+  "Uuid": "deda9563-fd98-4b8c-90fc-64a42a7d3dd1",
+  "IsCustomNode": false,
+  "Description": null,
+  "Name": "Script_Quantitativo_Excel",
+  "ElementResolver": {
+    "ResolutionMap": {}
+  },
+  "Inputs": [],
+  "Outputs": [],
+  "Nodes": [
+    {
+      "ConcreteType": "DSRevitNodesUI.Categories, DSRevitNodesUI",
+      "SelectedIndex": 94,
+      "SelectedString": "OST_ConduitFitting",
+      "NodeType": "ExtensionNode",
+      "Id": "775250f50ec34557882bca618e3a56c7",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "fcaed2d7efcd4cf3a073774fafac02bd",
+          "Name": "Category",
+          "Description": "A categoria selecionada.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Todas as categorias incorporadas."
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.ElementsOfCategory, DSRevitNodesUI",
+      "NodeType": "ExtensionNode",
+      "Id": "d5a0e46e0daf4ca596f242518bdf1d1b",
+      "Inputs": [
+        {
+          "Id": "b51f8d177b8f49fc8ca260e586d3f20f",
+          "Name": "Category",
+          "Description": "Categoria",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "c03a138f8f2141988e82d2c43ea9b606",
+          "Name": "Elements",
+          "Description": "Um tipo de elemento.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Obter todos os elementos da categoria especificada no modelo."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Carregar as bibliotecas DesignScript e padrão do Python\r\nimport sys\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\n# As entradas para este nó serão armazenadas como uma lista nas variáveis IN.\r\nCurvas = IN[0]\r\nTabElet = IN[1][2:] # As duas primeiras linhas são ignoradas\r\n\r\n# Separa as curvas no número de categorias de diâmetro dos eletrodutos\r\n#diams = [None]*len(TabElet)\r\n\r\nfor curva in Curvas:\r\n\tfor elet in TabElet:\r\n\t\t# elet[2] é o diâmetro nominal do eletroduto em forma de texto.\r\n\t\t# O texto é um número seguido do caractere ' ' e logo depois \r\n\t\t# a unidade. Portanto, a primeira palavra da string elet[2] \r\n\t\t# é o diâmetro procurado.\r\n\t\telet_diam = float(elet[3].split()[0])\r\n\t\tif curva.GetParameterValueByName(\"Diâmetro nominal\") == elet_diam:\r\n\t\t\tcurva.SetParameterByName(\"Tipo de serviço\", elet[4])\r\n\t\t\tbreak\r\n\r\n# Atribua a sua saída para a variável OUT.\r\nOUT = Curvas",
+      "VariableInputPorts": true,
+      "Id": "3cb50563392849a0b53b7b16f56b78d4",
+      "Inputs": [
+        {
+          "Id": "e35a1093229b4d74ba9ef7d0101c06f1",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "f6523759157e417890f8015aca3191fc",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f02b12680cdd4bc48d800a0a8471a631",
+          "Name": "OUT",
+          "Description": "Resultado do script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Executa um script IronPython incorporado."
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.Views, DSRevitNodesUI",
+      "SelectedIndex": 38,
+      "SelectedString": "Quantitativo de Eletroduto",
+      "NodeType": "ExtensionNode",
+      "Id": "0f63029391f846d6be378bbe74f82840",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "0d2dcdbb4a5d47808dd805b9ff32eb47",
+          "Name": "Views",
+          "Description": "O Views selecionado",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Todas as vistas disponíveis no documento atual."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Schedule.GetData@Revit.Elements.Element,bool,bool",
+      "Id": "f5da7fb9c070416b82d68170509139d8",
+      "Inputs": [
+        {
+          "Id": "20e81d2a055a4e07b00836c154034076",
+          "Name": "scheduleView",
+          "Description": "Input the Revit schedule view.\n\nElement",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8d17e226283c4fdeb57dbcd030a1f4b4",
+          "Name": "removeHeading",
+          "Description": "Set to True to remove the headings from the schedule data. Has no effect on Electric Panel Schedules or if schedule headings are not visible.\n\nbool\nValor padrão : false",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "6d10c9d6f2194621a3afeb843cea6f44",
+          "Name": "refresh",
+          "Description": "y Input a bool and switch states to refresh the data or set Dynamo to periodic updating.\n\nbool\nValor padrão : true",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "d1520cb8e7be47aabdfc1e90c25653d1",
+          "Name": "string[][]",
+          "Description": "String[][]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Gets all the table data from a given Schedule or Electric Panel Schedule as strings. Supports Periodic updating.\r\rVisit bimorph.com/bimorph-nodes for support\n\nSchedule.GetData (scheduleView: Element, removeHeading: bool = false, refresh: bool = true): string[][]"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Elements.Element.GetParameterValueByName@string",
+      "Id": "e7a7821a52974f259a93f7a6cb1b2b16",
+      "Inputs": [
+        {
+          "Id": "537d173d989a41e48feba7c280cbd7d3",
+          "Name": "element",
+          "Description": "Revit.Elements.Element",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "348c2af93aab4723a6b09512f5093484",
+          "Name": "parameterName",
+          "Description": "O nome do parâmetro cujos valores você deseja obter.\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "94345d39b0774d7b8b1380aba964b1f5",
+          "Name": "var[]..[]",
+          "Description": "var[]..[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Obter o valor de um os parâmetros do elemento.\n\nElement.GetParameterValueByName (parameterName: string): var[]..[]"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "Tipo de serviço",
+      "Id": "b2ae2655f4064e01af4bbd81efd49df0",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5481ffeadf94468fb97010723ac28c33",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Cria uma sequência de caracteres."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Schedule.GetData@Revit.Elements.Element,bool,bool",
+      "Id": "92e8b59b68c4462fa5d61695f6a823cc",
+      "Inputs": [
+        {
+          "Id": "b3d4c42bbbd2474282980cbedff98e09",
+          "Name": "scheduleView",
+          "Description": "Input the Revit schedule view.\n\nElement",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "427598cfcd9442eaaffccd48bc50ee8c",
+          "Name": "removeHeading",
+          "Description": "Set to True to remove the headings from the schedule data. Has no effect on Electric Panel Schedules or if schedule headings are not visible.\n\nbool\nValor padrão : false",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3b410cd3f4434b30a1dcbba81423caf1",
+          "Name": "refresh",
+          "Description": "y Input a bool and switch states to refresh the data or set Dynamo to periodic updating.\n\nbool\nValor padrão : true",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "e749f0cea26d4f52b851bc199bafa4a7",
+          "Name": "string[][]",
+          "Description": "String[][]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Gets all the table data from a given Schedule or Electric Panel Schedule as strings. Supports Periodic updating.\r\rVisit bimorph.com/bimorph-nodes for support\n\nSchedule.GetData (scheduleView: Element, removeHeading: bool = false, refresh: bool = true): string[][]"
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.Views, DSRevitNodesUI",
+      "SelectedIndex": 37,
+      "SelectedString": "Quantitativo de Cabos",
+      "NodeType": "ExtensionNode",
+      "Id": "d61fd63edaf64994aa04c2f2f7b42ec9",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1d8e7367bbae4b0e8a87986332a7bc52",
+          "Name": "Views",
+          "Description": "O Views selecionado",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Todas as vistas disponíveis no documento atual."
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Carregar as bibliotecas DesignScript e padrão do Python\r\nimport sys\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\nimport math as m\r\n\r\n# As entradas para este nó serão armazenadas como uma lista nas variáveis IN.\r\nCabos = IN[0][2:]\r\nCurvas = IN[1]\r\nEletrodutos = IN[2][2:]\r\n\r\n# Insira o código abaixo desta linha\r\n\r\n# Calcula o comprimento do caminho de eletroduto entre o trafo e \r\n# o cubículo de medição e proteção\r\n\r\nTam_Ali = 0 # tamanho total do caminho de alimentação\r\nTam_Aterr = 0 # tamanho total do caminho de aterramento\r\n\r\nL = []\r\n\r\n# Comprimento das curvas\r\n\r\nfor curva in Curvas:\r\n\tif curva.GetParameterValueByName(\"Tipo de serviço\") == \"Alimentação\":\r\n\t\tTam_Ali += float(curva.GetParameterValueByName(\"Raio de curvatura\"))\r\n\telif curva.GetParameterValueByName(\"Tipo de serviço\") == \"Aterramento\":\r\n\t\tTam_Aterr += float(curva.GetParameterValueByName(\"Raio de curvatura\"))\r\n\t\t\r\nTam_Ali *= 1e-3*m.pi/2\r\nTam_Aterr *= 1e-3*m.pi/2\r\n\t\t\r\n# Comprimento dos eletrodutos\r\n\r\nfor elet in Eletrodutos:\r\n\tif elet[4] == \"Alimentação\":\r\n\t\tTam_Ali += float(elet[2])\r\n\telif elet[4] == \"Aterramento\":\r\n\t\tTam_Aterr += float(elet[2])\r\n\r\n# Faz a alteração no comprimento dos cabos\r\n\r\nCabos_corr = Cabos[:] # cria uma cópia da lista de cabos\r\n\r\nfor cabo in Cabos_corr:\r\n\tcomp_revit = float(cabo[2])\r\n\tif cabo[5] == \".Trafo saída BT\":\r\n\t   \t# Trata-se da alimentação.\r\n\t\tcomp_cabo = (comp_revit + Tam_Ali) * int(cabo[4])\r\n\t\tcabo[2] = comp_cabo\r\n\telif cabo[5] == \".Aterramento Subestação\":\r\n\t\tcomp_cabo = comp_revit + Tam_Aterr\r\n\t\tcabo[2] = comp_cabo\r\n\t\t\r\n# Atribua a sua saída para a variável OUT.\r\nOUT = Cabos_corr",
+      "VariableInputPorts": true,
+      "Id": "be8be213eb5040ceb6479fb89bff1068",
+      "Inputs": [
+        {
+          "Id": "b46330b27e9b45da82f5fa0d57d84a01",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "6321849392064c9f822acce4df53a325",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "77ec22f89f8648b7a2d47431ba189046",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "4cd7d56a0ac44aeebbaee9df261ed37e",
+          "Name": "OUT",
+          "Description": "Resultado do script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Executa um script IronPython incorporado."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Schedule.GetData@Revit.Elements.Element,bool,bool",
+      "Id": "a2e5a4e1f078426686821dec3a0ad84e",
+      "Inputs": [
+        {
+          "Id": "83b6d0d1c49c41feb6fc822fbc46fd9f",
+          "Name": "scheduleView",
+          "Description": "Input the Revit schedule view.\n\nElement",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "bb52151ccded411b849eebfbf395fd2f",
+          "Name": "removeHeading",
+          "Description": "Set to True to remove the headings from the schedule data. Has no effect on Electric Panel Schedules or if schedule headings are not visible.\n\nbool\nValor padrão : false",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "a62c8d68352e426985551511cb4f21c9",
+          "Name": "refresh",
+          "Description": "y Input a bool and switch states to refresh the data or set Dynamo to periodic updating.\n\nbool\nValor padrão : true",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "658c4bb39f294d858d341edaa677c676",
+          "Name": "string[][]",
+          "Description": "String[][]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Gets all the table data from a given Schedule or Electric Panel Schedule as strings. Supports Periodic updating.\r\rVisit bimorph.com/bimorph-nodes for support\n\nSchedule.GetData (scheduleView: Element, removeHeading: bool = false, refresh: bool = true): string[][]"
+    },
+    {
+      "ConcreteType": "DSRevitNodesUI.Views, DSRevitNodesUI",
+      "SelectedIndex": 36,
+      "SelectedString": "Quantitativo - Subestação",
+      "NodeType": "ExtensionNode",
+      "Id": "1b6980d0803642fd8a935d23d79d39fd",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "5d9efb8e485b42399bfef3292708ed11",
+          "Name": "Views",
+          "Description": "O Views selecionado",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Todas as vistas disponíveis no documento atual."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSOffice.Data.ExportExcel@string,string,int,int,var[][],bool",
+      "Id": "218b42ace8584782b32a712255187381",
+      "Inputs": [
+        {
+          "Id": "1da91fe7c6e44502a4e941738a9afc80",
+          "Name": "filePath",
+          "Description": "O caminho do arquivo para a planilha do Microsoft Excel.\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0b6cf68b13a348bf9b03bc7d2e586bf8",
+          "Name": "sheetName",
+          "Description": "Nome da planilha na qual gravar os dados.\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8da87c372e154c8a9095ca84687c9855",
+          "Name": "startRow",
+          "Description": "Linha inicial para gravar os dados. Insira 0 para linha 1, 1 para linha 2 etc.\n\nint",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "0131271de04448c0b1c202fa9c7b1b4e",
+          "Name": "startCol",
+          "Description": "Coluna inicial para gravar os dados. Insira 0 para a coluna A, 1 para a coluna B etc.\n\nint",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "7dadf5a36326450fa2bdb6d476679ff3",
+          "Name": "data",
+          "Description": "Dados para gravar na planilha.\n\nvar[][]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "1c9c3617b84d44e3ae08392c4487af99",
+          "Name": "overWrite",
+          "Description": "bool\nValor padrão : false",
+          "UsingDefaultValue": true,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a6a27bda38b74464830e9cc7a9723874",
+          "Name": "data",
+          "Description": "Os dados gravados na planilha.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Inserir os dados em uma planilha do Microsoft Excel. Os dados são inseridos por linha com sublistas a serem escritas em linhas sucessivas. As linhas e colunas são indexadas em zero; por exemplo, o valor na lista dos dados em [0,0] será inserido na célula A1. Os valores nulos e as listas vazias serão inseridos no Excel como células vazias. Este nó requer que o Microsoft Excel esteja instalado.\n\nData.ExportExcel (filePath: string, sheetName: string, startRow: int, startCol: int, data: var[][], overWrite: bool = false): var[][]"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "Quantitativo - Subestação Aérea",
+      "Id": "c331becdb8084b53b3dd9c8129588d47",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1bf6500e44be48e48143d2ec8e04ea3e",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Cria uma sequência de caracteres."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Application.Document.Current",
+      "Id": "1fd9fa4eac574e3587390a8c118508c6",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "e45cbf07a4394e9c95b43f126fb69050",
+          "Name": "Document",
+          "Description": "Document",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Obter o documento atual\n\nDocument.Current: Document"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "Revit.Application.Document.FilePath",
+      "Id": "3cd222feea5a4606aeed088a39be2c16",
+      "Inputs": [
+        {
+          "Id": "54cba9f8ef4a474bb85f70f84cb551ac",
+          "Name": "document",
+          "Description": "Revit.Application.Document",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "842bfc5080134ab4af68ecb1169f8099",
+          "Name": "string",
+          "Description": "string",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "O caminho completo do documento.\n\nDocument.FilePath: string"
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSFunction, DynamoCore",
+      "NodeType": "FunctionNode",
+      "FunctionSignature": "DSCore.IO.FileSystem.DirectoryName@string",
+      "Id": "2eaabf5ecc7c47aa8187bd7a1e4e50cb",
+      "Inputs": [
+        {
+          "Id": "ec58c6c87d2848a9a08608782721296a",
+          "Name": "path",
+          "Description": "Caminho para obter a informação do diretório.\n\nstring",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "a6a06ed8295041cfaee0ac1dc1305876",
+          "Name": "string",
+          "Description": "string",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Retorna o nome do diretório de um caminho de arquivo.\n\nFileSystem.DirectoryName (path: string): string"
+    },
+    {
+      "ConcreteType": "PythonNodeModels.PythonNode, PythonNodeModels",
+      "NodeType": "PythonScriptNode",
+      "Code": "# Carregar as bibliotecas DesignScript e padrão do Python\r\nimport sys\r\nimport clr\r\nclr.AddReference('ProtoGeometry')\r\nfrom Autodesk.DesignScript.Geometry import *\r\n\r\n# As entradas para este nó serão armazenadas como uma lista nas variáveis IN.\r\nCabos = IN[0]\r\nEletrodutos = IN[1][2:]\r\nSE = IN[2][2:]\r\n\r\n# Insira o código abaixo desta linha\r\n\r\nQuantitativo = [[\"Item\", \"Quantidade\"]]\r\n\r\nfor item in Cabos:\r\n\t#cabo = item[0].split(': ')[1]\r\n\tQuantitativo.append([item[1], float(item[2])])\r\n\t\r\n# Verifica se há itens iguais separados\r\nfor i in range(1,len(Quantitativo)-2):\r\n\tif Quantitativo[i][0] == Quantitativo[i+1][0]:\r\n\t\tQuantitativo[i][1] += Quantitativo[i+1][1]\r\n\t\tdel Quantitativo[i+1]\r\n\t\r\nfor item in Eletrodutos:\r\n\tQuantitativo.append([item[1], float(item[2])])\r\n\t\r\n# Aproxima os comprimentos para o inteiro mais próximo e adiciona \r\n# a unidade 'm' (metro) para melhor leitura da equipe de orçamento\r\n\r\nfor item in Quantitativo[1:]:\r\n\titem[1] = str(round(item[1])) + \" m\"\r\n\t\r\n# Obtém o tamanho da lista contando apenas cabos e eletrodutos\r\nold_len = len(Quantitativo)\r\n\r\nfor item in SE:\r\n\tif \"Arame de Aço Galvanizado\" in item[0]:\r\n\t\tQuantitativo.append([item[1], \"2 kg\"])\r\n\telse:\r\n\t\tQuantitativo.append([item[1], item[2]])\r\n\t\t\r\n# Verifica se há itens iguais separados\r\nfor i in range(old_len,len(Quantitativo)-2):\r\n\tif Quantitativo[i][0] == Quantitativo[i+1][0]:\r\n\t\tQuantitativo[i][1] = int(Quantitativo[i][1]) + int(Quantitativo[i+1][1])\r\n\t\tdel Quantitativo[i+1]\r\n\t\r\n\r\n# Atribua a sua saída para a variável OUT.\r\nOUT = Quantitativo",
+      "VariableInputPorts": true,
+      "Id": "da0744fd841c4bde97d683c840b1d2de",
+      "Inputs": [
+        {
+          "Id": "365136cb46324d46b5ebad53e8e2c05e",
+          "Name": "IN[0]",
+          "Description": "Input #0",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "4646627e28d44702ac03db97d590bc8a",
+          "Name": "IN[1]",
+          "Description": "Input #1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "8893f90987714387998428cf40e68c9c",
+          "Name": "IN[2]",
+          "Description": "Input #2",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "257f7fbc76314ebd8879fc283d8aed0a",
+          "Name": "OUT",
+          "Description": "Resultado do script Python",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Executa um script IronPython incorporado."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.CodeBlockNodeModel, DynamoCore",
+      "NodeType": "CodeBlockNode",
+      "Code": "0;",
+      "Id": "690b8cd275884ff8806fcca9f075cf05",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "f582af11f1fa4383b0d82bd611ffd2f7",
+          "Name": "",
+          "Description": "Valor da expressão na linha 1",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Permite que o código DesignScript seja criado diretamente"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.BoolSelector, CoreNodeModels",
+      "NodeType": "BooleanInputNode",
+      "InputValue": true,
+      "Id": "6624d1955d6d439b984c2448209aee2d",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "1043936dc73545768a76dbcd83d8b38e",
+          "Name": "",
+          "Description": "Boolean",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Seleção entre True e False."
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Input.StringInput, CoreNodeModels",
+      "NodeType": "StringInputNode",
+      "InputValue": "\\Quantitativo - SE Aérea",
+      "Id": "10c1235671184c0a92687010cf362675",
+      "Inputs": [],
+      "Outputs": [
+        {
+          "Id": "71f3009e8e4140d49d38abcb3ed3463e",
+          "Name": "",
+          "Description": "String",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Cria uma sequência de caracteres."
+    },
+    {
+      "ConcreteType": "Dynamo.Graph.Nodes.ZeroTouch.DSVarArgFunction, DynamoCore",
+      "FunctionSignature": "DSCore.String.Concat@string[]",
+      "FunctionType": "VariableArgument",
+      "NodeType": "FunctionNode",
+      "Id": "ad5da1e08991403fbf417eb2564c2b91",
+      "Inputs": [
+        {
+          "Id": "7f2b3712a6f34031b4497f74d0da2830",
+          "Name": "string0",
+          "Description": "Lista de sequência de caracteres para concatenar.\n\nstring[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        },
+        {
+          "Id": "3dc0b6696f2d4f3e8e9c34ae04fd9740",
+          "Name": "string1",
+          "Description": "string[]",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "f47d3acfa4a7490fbac1ec1d3b2c03dc",
+          "Name": "str",
+          "Description": "A sequência de caracteres é criada a partir da lista de sequências de caracteres.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Auto",
+      "Description": "Concatena múltiplas sequências de caracteres em uma única sequência de caracteres.\n\nString.Concat (strings: string[]): string"
+    },
+    {
+      "ConcreteType": "CoreNodeModels.Watch, CoreNodeModels",
+      "NodeType": "ExtensionNode",
+      "Id": "d00850f669ae423b9198b86a3983e13f",
+      "Inputs": [
+        {
+          "Id": "930ad3732a0343f9a67f299f48e48ab8",
+          "Name": "",
+          "Description": "Nó para avaliar.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Outputs": [
+        {
+          "Id": "1e389e42a7b440b9b5c8fa90dda0a759",
+          "Name": "",
+          "Description": "Observar conteúdo.",
+          "UsingDefaultValue": false,
+          "Level": 2,
+          "UseLevels": false,
+          "KeepListStructure": false
+        }
+      ],
+      "Replication": "Disabled",
+      "Description": "Visualize a saída do nó."
+    }
+  ],
+  "Connectors": [
+    {
+      "Start": "fcaed2d7efcd4cf3a073774fafac02bd",
+      "End": "b51f8d177b8f49fc8ca260e586d3f20f",
+      "Id": "587c006cc7fa4a9b9259ec047b3a4ade"
+    },
+    {
+      "Start": "c03a138f8f2141988e82d2c43ea9b606",
+      "End": "e35a1093229b4d74ba9ef7d0101c06f1",
+      "Id": "ca13dbfe93304aba94792a5f652eaef2"
+    },
+    {
+      "Start": "f02b12680cdd4bc48d800a0a8471a631",
+      "End": "537d173d989a41e48feba7c280cbd7d3",
+      "Id": "b6791e36787e4507927be1a7813b96f2"
+    },
+    {
+      "Start": "f02b12680cdd4bc48d800a0a8471a631",
+      "End": "6321849392064c9f822acce4df53a325",
+      "Id": "661c6a64befe4e65926df159d0edaee5"
+    },
+    {
+      "Start": "0d2dcdbb4a5d47808dd805b9ff32eb47",
+      "End": "20e81d2a055a4e07b00836c154034076",
+      "Id": "f7c45ef0a65a4a8492a60eb310f89af4"
+    },
+    {
+      "Start": "d1520cb8e7be47aabdfc1e90c25653d1",
+      "End": "f6523759157e417890f8015aca3191fc",
+      "Id": "bb3377899e944c968a1acee9fa2612ad"
+    },
+    {
+      "Start": "d1520cb8e7be47aabdfc1e90c25653d1",
+      "End": "77ec22f89f8648b7a2d47431ba189046",
+      "Id": "56e80152522643718067c715f00302a5"
+    },
+    {
+      "Start": "d1520cb8e7be47aabdfc1e90c25653d1",
+      "End": "4646627e28d44702ac03db97d590bc8a",
+      "Id": "580eb1e77a0640c2b317d795179974ce"
+    },
+    {
+      "Start": "5481ffeadf94468fb97010723ac28c33",
+      "End": "348c2af93aab4723a6b09512f5093484",
+      "Id": "251ddc210dd24ce78055e631b4884d13"
+    },
+    {
+      "Start": "e749f0cea26d4f52b851bc199bafa4a7",
+      "End": "b46330b27e9b45da82f5fa0d57d84a01",
+      "Id": "d2b6c80e613b4be3a186a6455e10225b"
+    },
+    {
+      "Start": "1d8e7367bbae4b0e8a87986332a7bc52",
+      "End": "b3d4c42bbbd2474282980cbedff98e09",
+      "Id": "1ced342f1a004b4388d38b8c4b378fa3"
+    },
+    {
+      "Start": "4cd7d56a0ac44aeebbaee9df261ed37e",
+      "End": "365136cb46324d46b5ebad53e8e2c05e",
+      "Id": "0d7ef34b0bab48468ed8bd854ffe2a2c"
+    },
+    {
+      "Start": "658c4bb39f294d858d341edaa677c676",
+      "End": "8893f90987714387998428cf40e68c9c",
+      "Id": "7ad2a5665ba440c184a3e5cbea41e4d3"
+    },
+    {
+      "Start": "5d9efb8e485b42399bfef3292708ed11",
+      "End": "83b6d0d1c49c41feb6fc822fbc46fd9f",
+      "Id": "af0eebbec11b4fc5929cacd5808d932a"
+    },
+    {
+      "Start": "1bf6500e44be48e48143d2ec8e04ea3e",
+      "End": "0b6cf68b13a348bf9b03bc7d2e586bf8",
+      "Id": "ab600166acde463391ca72b04e2694c5"
+    },
+    {
+      "Start": "e45cbf07a4394e9c95b43f126fb69050",
+      "End": "54cba9f8ef4a474bb85f70f84cb551ac",
+      "Id": "6f48e86bae5745588c52e281d007572b"
+    },
+    {
+      "Start": "842bfc5080134ab4af68ecb1169f8099",
+      "End": "ec58c6c87d2848a9a08608782721296a",
+      "Id": "da4c0b1416574b1b899c1aab765816d8"
+    },
+    {
+      "Start": "a6a06ed8295041cfaee0ac1dc1305876",
+      "End": "7f2b3712a6f34031b4497f74d0da2830",
+      "Id": "a797450de84144d8b1cd3c84681731b2"
+    },
+    {
+      "Start": "257f7fbc76314ebd8879fc283d8aed0a",
+      "End": "7dadf5a36326450fa2bdb6d476679ff3",
+      "Id": "f850f93635f34c52929cfd971a039395"
+    },
+    {
+      "Start": "f582af11f1fa4383b0d82bd611ffd2f7",
+      "End": "8da87c372e154c8a9095ca84687c9855",
+      "Id": "c97d176aedd64ca2b55d76c37bc8c1da"
+    },
+    {
+      "Start": "f582af11f1fa4383b0d82bd611ffd2f7",
+      "End": "0131271de04448c0b1c202fa9c7b1b4e",
+      "Id": "220af46a86cb49febafa1bfbedad7250"
+    },
+    {
+      "Start": "1043936dc73545768a76dbcd83d8b38e",
+      "End": "1c9c3617b84d44e3ae08392c4487af99",
+      "Id": "98cc3265e5f84db991d2d9c511bfe83d"
+    },
+    {
+      "Start": "71f3009e8e4140d49d38abcb3ed3463e",
+      "End": "3dc0b6696f2d4f3e8e9c34ae04fd9740",
+      "Id": "e0213110f9c441bfa0584a387009fcff"
+    },
+    {
+      "Start": "f47d3acfa4a7490fbac1ec1d3b2c03dc",
+      "End": "930ad3732a0343f9a67f299f48e48ab8",
+      "Id": "0f474dd0a604469ca1b89f8f98132ba4"
+    },
+    {
+      "Start": "f47d3acfa4a7490fbac1ec1d3b2c03dc",
+      "End": "1da91fe7c6e44502a4e941738a9afc80",
+      "Id": "1486217774894919ae262c116a654796"
+    }
+  ],
+  "Dependencies": [],
+  "NodeLibraryDependencies": [
+    {
+      "Name": "bimorphNodes",
+      "Version": "4.1.1",
+      "ReferenceType": "Package",
+      "Nodes": [
+        "f5da7fb9c070416b82d68170509139d8",
+        "92e8b59b68c4462fa5d61695f6a823cc",
+        "a2e5a4e1f078426686821dec3a0ad84e"
+      ]
+    }
+  ],
+  "Bindings": [],
+  "View": {
+    "Dynamo": {
+      "ScaleFactor": 1.0,
+      "HasRunWithoutCrash": true,
+      "IsVisibleInDynamoLibrary": true,
+      "Version": "2.6.1.8786",
+      "RunType": "Manual",
+      "RunPeriod": "1000"
+    },
+    "Camera": {
+      "Name": "Visualização do plano de fundo",
+      "EyeX": -17.0,
+      "EyeY": 24.0,
+      "EyeZ": 50.0,
+      "LookX": 12.0,
+      "LookY": -13.0,
+      "LookZ": -58.0,
+      "UpX": 0.0,
+      "UpY": 1.0,
+      "UpZ": 0.0
+    },
+    "NodeViews": [
+      {
+        "ShowGeometry": true,
+        "Name": "Categories",
+        "Id": "775250f50ec34557882bca618e3a56c7",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -1278.0018613668547,
+        "Y": 360.44664534940887
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "All Elements of Category",
+        "Id": "d5a0e46e0daf4ca596f242518bdf1d1b",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -944.35267324631809,
+        "Y": 362.66218989739673
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Separação de Curvas",
+        "Id": "3cb50563392849a0b53b7b16f56b78d4",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -565.86869459552645,
+        "Y": 443.7798359455403
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Views",
+        "Id": "0f63029391f846d6be378bbe74f82840",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -1278.1220666451284,
+        "Y": 530.65628172787387
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Schedule.GetData",
+        "Id": "f5da7fb9c070416b82d68170509139d8",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -953.07775217465814,
+        "Y": 532.88995071389422
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Element.GetParameterValueByName",
+        "Id": "e7a7821a52974f259a93f7a6cb1b2b16",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -342.94990091889463,
+        "Y": 622.55961002591891
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "String",
+        "Id": "b2ae2655f4064e01af4bbd81efd49df0",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": -491.08231324895235,
+        "Y": 662.29570786163868
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Schedule.GetData",
+        "Id": "92e8b59b68c4462fa5d61695f6a823cc",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 694.43503428028771,
+        "Y": 20.390311320296689
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Views",
+        "Id": "d61fd63edaf64994aa04c2f2f7b42ec9",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 336.94351756484548,
+        "Y": 4.3390594245080365
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Correção Quantitativo de Cabos",
+        "Id": "be8be213eb5040ceb6479fb89bff1068",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1212.444723689279,
+        "Y": 199.79370322538409
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Schedule.GetData",
+        "Id": "a2e5a4e1f078426686821dec3a0ad84e",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1359.225243041928,
+        "Y": 467.47411557437954
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Views",
+        "Id": "1b6980d0803642fd8a935d23d79d39fd",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1083.329497485646,
+        "Y": 556.75634643620947
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Data.ExportExcel",
+        "Id": "218b42ace8584782b32a712255187381",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2521.9552132208346,
+        "Y": 236.46576139047608
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "String",
+        "Id": "c331becdb8084b53b3dd9c8129588d47",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1993.2216733186,
+        "Y": 167.09470177611018
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Document.Current",
+        "Id": "1fd9fa4eac574e3587390a8c118508c6",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1955.1544973615426,
+        "Y": -279.95945711379085
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Document.FilePath",
+        "Id": "3cd222feea5a4606aeed088a39be2c16",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2187.9544973615421,
+        "Y": -279.95945711379085
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "FileSystem.DirectoryName",
+        "Id": "2eaabf5ecc7c47aa8187bd7a1e4e50cb",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2502.3544973615321,
+        "Y": -279.95945711379085
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Quantitativo Final",
+        "Id": "da0744fd841c4bde97d683c840b1d2de",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 1705.4134134547116,
+        "Y": 341.54398827675504
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Code Block",
+        "Id": "690b8cd275884ff8806fcca9f075cf05",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2218.1900961550537,
+        "Y": 273.9689183936058
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Boolean",
+        "Id": "6624d1955d6d439b984c2448209aee2d",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2227.6833645522156,
+        "Y": 430.35785641306416
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "String",
+        "Id": "10c1235671184c0a92687010cf362675",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2176.979078548005,
+        "Y": 51.228788211886922
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "String.Concat",
+        "Id": "ad5da1e08991403fbf417eb2564c2b91",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2429.8717968977094,
+        "Y": -31.3743609978157
+      },
+      {
+        "ShowGeometry": true,
+        "Name": "Watch",
+        "Id": "d00850f669ae423b9198b86a3983e13f",
+        "IsSetAsInput": false,
+        "IsSetAsOutput": false,
+        "Excluded": false,
+        "X": 2765.3676644571169,
+        "Y": -31.3743609978157
+      }
+    ],
+    "Annotations": [
+      {
+        "Id": "1d44f7144bb6482e99be859d0f014655",
+        "Title": "Diretório do Projeto Atual",
+        "Nodes": [
+          "1fd9fa4eac574e3587390a8c118508c6",
+          "3cd222feea5a4606aeed088a39be2c16",
+          "2eaabf5ecc7c47aa8187bd7a1e4e50cb"
+        ],
+        "Left": 1945.1544973615426,
+        "Top": -333.15945711379084,
+        "Width": 749.59999999998956,
+        "Height": 145.79999999999998,
+        "FontSize": 36.0,
+        "InitialTop": -279.95945711379085,
+        "InitialHeight": 145.0,
+        "TextblockHeight": 43.2,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "c4160cadc3cf46748415d64a9c11eda1",
+        "Title": "Separação das Curvas de Aterramento e Alimentação",
+        "Nodes": [
+          "775250f50ec34557882bca618e3a56c7",
+          "d5a0e46e0daf4ca596f242518bdf1d1b",
+          "3cb50563392849a0b53b7b16f56b78d4",
+          "0f63029391f846d6be378bbe74f82840",
+          "f5da7fb9c070416b82d68170509139d8",
+          "e7a7821a52974f259a93f7a6cb1b2b16",
+          "b2ae2655f4064e01af4bbd81efd49df0"
+        ],
+        "Left": -1288.1220666451284,
+        "Top": 307.24664534940888,
+        "Width": 1217.5721657262338,
+        "Height": 422.84906251222981,
+        "FontSize": 36.0,
+        "InitialTop": 360.44664534940887,
+        "InitialHeight": 446.84906251222981,
+        "TextblockHeight": 43.2,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "18045559fc5943d790c8dc9b665b5555",
+        "Title": "Quantitativo de cabos original do Revit",
+        "Nodes": [
+          "92e8b59b68c4462fa5d61695f6a823cc",
+          "d61fd63edaf64994aa04c2f2f7b42ec9"
+        ],
+        "Left": 326.94351756484548,
+        "Top": -48.860940575491966,
+        "Width": 636.69151671544228,
+        "Height": 213.05125189578865,
+        "FontSize": 36.0,
+        "InitialTop": 4.3390594245080365,
+        "InitialHeight": 161.05125189578865,
+        "TextblockHeight": 43.2,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "988e10ea2d804460b8632ee8f2635476",
+        "Title": "Correção do Quantitativo Total",
+        "Nodes": [
+          "be8be213eb5040ceb6479fb89bff1068",
+          "a2e5a4e1f078426686821dec3a0ad84e",
+          "1b6980d0803642fd8a935d23d79d39fd",
+          "da0744fd841c4bde97d683c840b1d2de"
+        ],
+        "Left": 1073.329497485646,
+        "Top": 146.5937032253841,
+        "Width": 811.68391596906565,
+        "Height": 502.76264321082533,
+        "FontSize": 36.0,
+        "InitialTop": 199.79370322538409,
+        "InitialHeight": 501.96264321082538,
+        "TextblockHeight": 43.2,
+        "Background": "#FFC1D676"
+      },
+      {
+        "Id": "630d18b205d5456098046bc06ab545ad",
+        "Title": "Exporta o quantitativo para o Excel",
+        "Nodes": [
+          "218b42ace8584782b32a712255187381",
+          "690b8cd275884ff8806fcca9f075cf05",
+          "6624d1955d6d439b984c2448209aee2d",
+          "10c1235671184c0a92687010cf362675",
+          "ad5da1e08991403fbf417eb2564c2b91",
+          "d00850f669ae423b9198b86a3983e13f",
+          "c331becdb8084b53b3dd9c8129588d47"
+        ],
+        "Left": 1983.2216733186,
+        "Top": -84.5743609978157,
+        "Width": 870.5459911385168,
+        "Height": 582.7322174108798,
+        "FontSize": 36.0,
+        "InitialTop": -31.3743609978157,
+        "InitialHeight": 606.73221741087991,
+        "TextblockHeight": 43.2,
+        "Background": "#FFC1D676"
+      }
+    ],
+    "X": -811.18642858107569,
+    "Y": 250.53650279937315,
+    "Zoom": 0.6012380139869572
+  }
+}
